@@ -1,0 +1,23 @@
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+.carousel img {
+  height: 500px;
+  object-fit: cover;
+}
+
+.card img {
+  height: 350px;
+  object-fit: cover;
+}
+
+.navbar-brand {
+  font-size: 1.3rem;
+}
+
+@media (max-width: 768px) {
+  .carousel img {
+    height: 300px;
+  }
+}
