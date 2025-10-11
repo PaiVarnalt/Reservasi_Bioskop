@@ -1,5 +1,5 @@
 <?php
-include '../koneksi.php';
+include '../lib/koneksi.php';
 $action = $_GET['action'] ?? '';
 
 if ($action == 'read') {
@@ -22,7 +22,7 @@ if ($action == 'read') {
           <th>Aksi</th>
         </tr>";
   while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $foto = !empty($row['foto_profil']) ? "../asset/user/".$row['foto_profil'] : "../asset/user/default.png";
+    $foto = !empty($row['foto_profil']) ? "asset/img/user/".$row['foto_profil'] : "asset/img/user/default.png";
     echo "<tr>
       <td>{$row['user_id']}</td>
       <td><img src='$foto' width='50' style='border-radius:8px;'></td>
@@ -75,7 +75,7 @@ elseif ($action == 'save') {
   if (!empty($_FILES['foto_profil']['name'])) {
     $ext = pathinfo($_FILES['foto_profil']['name'], PATHINFO_EXTENSION);
     $fotoName = uniqid() . '.' . $ext;
-    move_uploaded_file($_FILES['foto_profil']['tmp_name'], "../asset/user/" . $fotoName);
+    move_uploaded_file($_FILES['foto_profil']['tmp_name'], "../asset/img/user/" . $fotoName);
   }
 
   if ($id == '') {

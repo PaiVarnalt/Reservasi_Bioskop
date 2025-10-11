@@ -1,6 +1,6 @@
 <?php
 $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
-$file = "modules/$page.php";
+$file = "modul/$page.php";
 if (file_exists($file)) {
   include $file;
 } else {
