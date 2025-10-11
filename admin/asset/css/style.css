@@ -1,0 +1,45 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f3f3;
+}
+
+.container {
+  display: flex;
+}
+
+.sidebar {
+  width: 220px;
+  background: #1c1c1c;
+  color: white;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.sidebar h2 {
+  font-size: 20px;
+  margin-bottom: 30px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin: 15px 0;
+}
+
+.sidebar ul li a {
+  color: white;
+  text-decoration: none;
+}
+
+.sidebar ul li a:hover {
+  color: #ffcc00;
+}
+
+.main-content {
+  flex: 1;
+  padding: 30px;
+}
