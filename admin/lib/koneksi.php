@@ -2,7 +2,7 @@
 $host = "localhost";
 $dbname = "db_bioskop";
 $username = "root";
-$password = "rpl12345";
+$password = "";
 
 try {
   $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
@@ -12,3 +12,4 @@ try {
   exit;
 }
 ?>
+
