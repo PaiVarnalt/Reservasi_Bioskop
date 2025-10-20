@@ -3,7 +3,7 @@
 $host = "localhost";
 $dbname = "db_bioskop";
 $username = "root";
-$password = "";
+$password = "rpl12345";
 
 try {
     // Buat koneksi PDO
