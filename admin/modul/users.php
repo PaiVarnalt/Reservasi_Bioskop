@@ -1,4 +1,6 @@
 <?php
+include '../lib/koneksi.php'; // pastikan koneksi dipanggil
+
 $action = $_GET['action'] ?? '';
 
 if ($action == 'create') {
@@ -8,13 +10,22 @@ if ($action == 'create') {
   $role = $_POST['role'];
   $foto = '';
 
+  // Upload foto baru
   if (!empty($_FILES['foto']['name'])) {
-    $foto = 'asset/img/user/' . basename($_FILES['foto']['name']);
-    move_uploaded_file($_FILES['foto']['tmp_name'], '../' . $foto);
+    $targetDir = '../asset/img/user/';
+    if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
+
+    $fotoName = basename($_FILES['foto']['name']);
+    $fotoPath = $targetDir . $fotoName;
+
+    if (move_uploaded_file($_FILES['foto']['tmp_name'], $fotoPath)) {
+      $foto = 'asset/img/user/' . $fotoName; // path untuk disimpan ke database
+    }
   }
 
-  $stmt = $conn->prepare("INSERT INTO user (username,password,email,foto_profil,role) VALUES (?,?,?,?,?)");
-  $stmt->execute([$username,$password,$email,$foto,$role]);
+  $stmt = $conn->prepare("INSERT INTO user (username, password, email, foto_profil, role) VALUES (?, ?, ?, ?, ?)");
+  $stmt->execute([$username, $password, $email, $foto, $role]);
+
   header("Location: index.php?page=users");
   exit;
 }
@@ -34,12 +45,20 @@ if ($action == 'update') {
   $foto = $_POST['foto_lama'];
 
   if (!empty($_FILES['foto']['name'])) {
-    $foto = 'asset/uploads/' . basename($_FILES['foto']['name']);
-    move_uploaded_file($_FILES['foto']['tmp_name'], '../../' . $foto);
+    $targetDir = '../asset/img/user/';
+    if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
+
+    $fotoName = basename($_FILES['foto']['name']);
+    $fotoPath = $targetDir . $fotoName;
+
+    if (move_uploaded_file($_FILES['foto']['tmp_name'], $fotoPath)) {
+      $foto = 'asset/img/user/' . $fotoName;
+    }
   }
 
   $stmt = $conn->prepare("UPDATE user SET username=?, email=?, role=?, foto_profil=? WHERE user_id=?");
-  $stmt->execute([$username,$email,$role,$foto,$id]);
+  $stmt->execute([$username, $email, $role, $foto, $id]);
+
   header("Location: index.php?page=users");
   exit;
 }
@@ -72,15 +91,25 @@ if ($action == 'update') {
       <td><?= $row['user_id'] ?></td>
       <td><?= htmlspecialchars($row['username']) ?></td>
       <td><?= htmlspecialchars($row['email']) ?></td>
-      <td><span class="badge bg-<?= $row['role']=='admin'?'danger':'secondary' ?>"><?= $row['role'] ?></span></td>
       <td>
-        <?php if ($row['foto_profil']): ?>
-          <img src="<?= $row['foto_profil'] ?>" width="50" class="rounded-circle">
+        <span class="badge bg-<?= $row['role'] == 'admin' ? 'danger' : 'secondary' ?>">
+          <?= $row['role'] ?>
+        </span>
+      </td>
+      <td>
+        <?php if (!empty($row['foto_profil'])): ?>
+          <img src="../<?= $row['foto_profil'] ?>" width="50" height="50" class="rounded-circle" style="object-fit: cover;">
+        <?php else: ?>
+          <span class="text-muted">-</span>
         <?php endif; ?>
       </td>
       <td>
-        <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#edit<?= $row['user_id'] ?>"><i class="bi bi-pencil"></i></button>
-        <a href="index.php?page=users&action=delete&id=<?= $row['user_id'] ?>" onclick="return confirm('Yakin hapus data ini?')" class="btn btn-sm btn-danger">
+        <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#edit<?= $row['user_id'] ?>">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <a href="index.php?page=users&action=delete&id=<?= $row['user_id'] ?>"
+           onclick="return confirm('Yakin hapus data ini?')"
+           class="btn btn-sm btn-danger">
           <i class="bi bi-trash"></i>
         </a>
       </td>
@@ -107,8 +136,8 @@ if ($action == 'update') {
               <div class="mb-3">
                 <label>Role</label>
                 <select name="role" class="form-select">
-                  <option value="admin" <?= $row['role']=='admin'?'selected':'' ?>>Admin</option>
-                  <option value="user" <?= $row['role']=='user'?'selected':'' ?>>User</option>
+                  <option value="admin" <?= $row['role'] == 'admin' ? 'selected' : '' ?>>Admin</option>
+                  <option value="user" <?= $row['role'] == 'user' ? 'selected' : '' ?>>User</option>
                 </select>
               </div>
               <div class="mb-3">
