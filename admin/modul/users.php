@@ -3,6 +3,7 @@ include '../lib/koneksi.php'; // pastikan koneksi dipanggil
 
 $action = $_GET['action'] ?? '';
 
+// === CRUD ACTIONS ===
 if ($action == 'create') {
   $username = $_POST['username'];
   $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
@@ -10,7 +11,6 @@ if ($action == 'create') {
   $role = $_POST['role'];
   $foto = '';
 
-  // Upload foto baru
   if (!empty($_FILES['foto']['name'])) {
     $targetDir = '../asset/img/user/';
     if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
@@ -19,7 +19,7 @@ if ($action == 'create') {
     $fotoPath = $targetDir . $fotoName;
 
     if (move_uploaded_file($_FILES['foto']['tmp_name'], $fotoPath)) {
-      $foto = 'asset/img/user/' . $fotoName; // path untuk disimpan ke database
+      $foto = 'asset/img/user/' . $fotoName;
     }
   }
 
@@ -64,6 +64,7 @@ if ($action == 'update') {
 }
 ?>
 
+<!-- ====== UI ====== -->
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h4>Manajemen User</h4>
   <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
@@ -71,90 +72,123 @@ if ($action == 'update') {
   </button>
 </div>
 
+<!-- 🔍 Form Pencarian -->
+<form method="GET" class="mb-3">
+  <input type="hidden" name="page" value="users">
+  <div class="input-group">
+    <input type="text" name="search" class="form-control" placeholder="Cari ID, Username, atau Email..."
+           value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
+    <button class="btn btn-dark" type="submit">Cari</button>
+    <?php if (!empty($_GET['search'])): ?>
+      <a href="index.php?page=users" class="btn btn-secondary">Reset</a>
+    <?php endif; ?>
+  </div>
+</form>
+
 <table class="table table-bordered table-hover">
   <thead class="table-dark">
     <tr>
       <th>ID</th>
+      <th>Foto</th>
       <th>Username</th>
       <th>Email</th>
       <th>Role</th>
-      <th>Foto</th>
       <th>Aksi</th>
     </tr>
   </thead>
   <tbody>
     <?php
-    $stmt = $conn->query("SELECT * FROM user ORDER BY user_id DESC");
-    foreach ($stmt as $row):
-    ?>
-    <tr>
-      <td><?= $row['user_id'] ?></td>
-      <td><?= htmlspecialchars($row['username']) ?></td>
-      <td><?= htmlspecialchars($row['email']) ?></td>
-      <td>
-        <span class="badge bg-<?= $row['role'] == 'admin' ? 'danger' : 'secondary' ?>">
-          <?= $row['role'] ?>
-        </span>
-      </td>
-      <td>
-        <?php if (!empty($row['foto_profil'])): ?>
-          <img src="../<?= $row['foto_profil'] ?>" width="50" height="50" class="rounded-circle" style="object-fit: cover;">
-        <?php else: ?>
-          <span class="text-muted">-</span>
-        <?php endif; ?>
-      </td>
-      <td>
-        <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#edit<?= $row['user_id'] ?>">
-          <i class="bi bi-pencil"></i>
-        </button>
-        <a href="index.php?page=users&action=delete&id=<?= $row['user_id'] ?>"
-           onclick="return confirm('Yakin hapus data ini?')"
-           class="btn btn-sm btn-danger">
-          <i class="bi bi-trash"></i>
-        </a>
-      </td>
-    </tr>
+    // === 🔎 Pencarian Data ===
+    $search = $_GET['search'] ?? '';
+    if ($search) {
+      $stmt = $conn->prepare("
+        SELECT * FROM user 
+        WHERE user_id LIKE :search 
+           OR username LIKE :search 
+           OR email LIKE :search 
+        ORDER BY user_id DESC
+      ");
+      $stmt->execute(['search' => "%$search%"]);
+    } else {
+      $stmt = $conn->query("SELECT * FROM user ORDER BY user_id DESC");
+    }
 
-    <!-- Modal Edit -->
-    <div class="modal fade" id="edit<?= $row['user_id'] ?>">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <form method="POST" enctype="multipart/form-data" action="index.php?page=users&action=update">
-            <div class="modal-header">
-              <h5>Edit User</h5>
-            </div>
-            <div class="modal-body">
-              <input type="hidden" name="user_id" value="<?= $row['user_id'] ?>">
-              <div class="mb-3">
-                <label>Username</label>
-                <input type="text" name="username" class="form-control" value="<?= $row['username'] ?>" required>
+    if ($stmt->rowCount() == 0): ?>
+      <tr>
+        <td colspan="6" class="text-center text-muted">Tidak ada data ditemukan</td>
+      </tr>
+    <?php else:
+      foreach ($stmt as $row): ?>
+      <tr>
+        <td><?= $row['user_id'] ?></td>
+        <td>
+          <?php if (!empty($row['foto_profil'])): ?>
+            <img src="../<?= $row['foto_profil'] ?>" width="50" height="50" class="rounded-circle" style="object-fit: cover;">
+          <?php else: ?>
+            <span class="text-muted">-</span>
+          <?php endif; ?>
+        </td>
+        <td><?= htmlspecialchars($row['username']) ?></td>
+        <td><?= htmlspecialchars($row['email']) ?></td>
+        <td>
+          <span class="badge bg-<?= $row['role'] == 'admin' ? 'danger' : 'secondary' ?>">
+            <?= $row['role'] ?>
+          </span>
+        </td>
+        <td>
+          <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#edit<?= $row['user_id'] ?>">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <a href="index.php?page=users&action=delete&id=<?= $row['user_id'] ?>"
+             onclick="return confirm('Yakin hapus data ini?')"
+             class="btn btn-sm btn-danger">
+            <i class="bi bi-trash"></i>
+          </a>
+        </td>
+      </tr>
+
+      <!-- Modal Edit -->
+      <div class="modal fade" id="edit<?= $row['user_id'] ?>">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form method="POST" enctype="multipart/form-data" action="index.php?page=users&action=update">
+              <div class="modal-header">
+                <h5>Edit User</h5>
               </div>
-              <div class="mb-3">
-                <label>Email</label>
-                <input type="email" name="email" class="form-control" value="<?= $row['email'] ?>" required>
+              <div class="modal-body">
+                <input type="hidden" name="user_id" value="<?= $row['user_id'] ?>">
+                <div class="mb-3">
+                  <label>Username</label>
+                  <input type="text" name="username" class="form-control" value="<?= $row['username'] ?>" required>
+                </div>
+                <div class="mb-3">
+                  <label>Email</label>
+                  <input type="email" name="email" class="form-control" value="<?= $row['email'] ?>" required>
+                </div>
+                <div class="mb-3">
+                  <label>Role</label>
+                  <select name="role" class="form-select">
+                    <option value="admin" <?= $row['role'] == 'admin' ? 'selected' : '' ?>>Admin</option>
+                    <option value="user" <?= $row['role'] == 'user' ? 'selected' : '' ?>>User</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label>Foto Profil</label>
+                  <input type="file" name="foto" class="form-control">
+                  <input type="hidden" name="foto_lama" value="<?= $row['foto_profil'] ?>">
+                </div>
               </div>
-              <div class="mb-3">
-                <label>Role</label>
-                <select name="role" class="form-select">
-                  <option value="admin" <?= $row['role'] == 'admin' ? 'selected' : '' ?>>Admin</option>
-                  <option value="user" <?= $row['role'] == 'user' ? 'selected' : '' ?>>User</option>
-                </select>
+              <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button class="btn btn-success" type="submit">Simpan</button>
               </div>
-              <div class="mb-3">
-                <label>Foto Profil</label>
-                <input type="file" name="foto" class="form-control">
-                <input type="hidden" name="foto_lama" value="<?= $row['foto_profil'] ?>">
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-              <button class="btn btn-success" type="submit">Simpan</button>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
-    <?php endforeach; ?>
+      <?php endforeach;
+    endif;
+    ?>
   </tbody>
 </table>
 
