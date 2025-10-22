@@ -17,8 +17,14 @@
         <a class="nav-link text-white <?= ($_GET['page'] ?? '') == 'studio' ? 'active fw-bold' : '' ?>" href="index.php?page=studio">
           <i class="bi bi-people"></i> Manajemen studio
         </a>
-        <a class="nav-link text-white <?= ($_GET['page'] ?? '') == 'jadwal_tayanng' ? 'active fw-bold' : '' ?>" href="index.php?page=jadwal_tayang">
+        <a class="nav-link text-white <?= ($_GET['page'] ?? '') == 'jadwal_tayang' ? 'active fw-bold' : '' ?>" href="index.php?page=jadwal_tayang">
           <i class="bi bi-people"></i> Manajemen Jadwal Tayang
+        </a>
+        <a class="nav-link text-white <?= ($_GET['page'] ?? '') == 'kursi' ? 'active fw-bold' : '' ?>" href="index.php?page=kursi">
+          <i class="bi bi-people"></i> Manajemen Kursi
+        </a>
+        <a class="nav-link text-white <?= ($_GET['page'] ?? '') == 'tiket' ? 'active fw-bold' : '' ?>" href="index.php?page=tiket">
+          <i class="bi bi-people"></i> Manajemen tiket
         </a>
       </li>
     </ul>

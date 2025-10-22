@@ -14,6 +14,12 @@ switch ($page) {
   case 'studio':
     include 'modul/studio.php';
     break;
+  case 'kursi':
+    include 'modul/kursi.php';
+    break;
+  case 'tiket':
+    include 'modul/tiket.php';
+    break;
 
   default:
     echo "
