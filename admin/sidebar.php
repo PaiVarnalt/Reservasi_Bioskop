@@ -1,17 +1,17 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand fw-bold" href="#">🎬 Admin Bioskop</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav" aria-controls="adminNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="adminNav">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link active" data-page="dashboard" href="#">Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" data-page="users" href="#">User</a></li>
-        <li class="nav-item"><a class="nav-link" data-page="film" href="#">Film</a></li>
-        <li class="nav-item"><a class="nav-link" data-page="jadwal" href="#">Jadwal</a></li>
-        <li class="nav-item"><a class="nav-link" data-page="transaksi" href="#">Transaksi</a></li>
-      </ul>
-    </div>
+<nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar vh-100 position-fixed">
+  <div class="position-sticky pt-3">
+    <h5 class="text-white px-3 mb-3">Admin Panel</h5>
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link text-white <?= ($_GET['page'] ?? '') == '' ? 'active fw-bold' : '' ?>" href="index.php">
+          <i class="bi bi-house"></i> Dashboard
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-white <?= ($_GET['page'] ?? '') == 'users' ? 'active fw-bold' : '' ?>" href="index.php?page=users">
+          <i class="bi bi-people"></i> Manajemen User
+        </a>
+      </li>
+    </ul>
   </div>
 </nav>

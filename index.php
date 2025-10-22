@@ -17,7 +17,7 @@ include 'lib/koneksi.php';
 <nav class="navbar navbar-expand-lg bg-white shadow-sm fixed-top">
   <div class="container">
     <a class="navbar-brand fw-bold text-danger d-flex align-items-center" href="#">
-      <img src="asset/img/logo.png" alt="Logo" width="35" class="me-2">
+      <img src="asset/img/logo.png" alt="Logo" width="50" class="">
       BioskopKu
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">

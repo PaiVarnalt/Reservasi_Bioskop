@@ -1,35 +1,23 @@
-<?php include 'lib/koneksi.php'; ?>
+<?php include '../lib/koneksi.php'; ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Bioskop</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Bootstrap -->
+  <title>Dashboard Admin</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 </head>
-<body class="bg-light">
-  <?php include 'sidebar.php'; ?>
+<body>
+<div class="container-fluid">
+  <div class="row">
+    <?php include 'sidebar.php'; ?>
 
-  <div class="container mt-4">
-    <div id="content">
-      <?php include 'modul/dashboard.php'; ?>
-    </div>
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mt-4">
+      <?php include 'route.php'; ?>
+    </main>
   </div>
+</div>
 
-  <script>
-    // Ganti konten dengan AJAX
-    $(document).ready(function(){
-      $('a[data-page]').on('click', function(e){
-        e.preventDefault();
-        const page = $(this).data('page');
-        $('#content').load('modul/' + page + '.php');
-        $('a.nav-link').removeClass('active');
-        $(this).addClass('active');
-      });
-    });
-  </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
