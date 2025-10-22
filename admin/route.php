@@ -5,6 +5,21 @@ switch ($page) {
   case 'users':
     include 'modul/users.php';
     break;
+  case 'film':
+    include 'modul/film.php';
+    break;
+  case 'jadwal_tayang':
+    include 'modul/jadwal_tayang.php';
+    break;
+  case 'studio':
+    include 'modul/studio.php';
+    break;
+  case 'kursi':
+    include 'modul/kursi.php';
+    break;
+  case 'tiket':
+    include 'modul/tiket.php';
+    break;
 
   default:
     echo "
