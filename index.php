@@ -9,6 +9,7 @@ include 'lib/koneksi.php';
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BioskopKu - Nonton Seru Setiap Hari!</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" href="asset/css/style.css">
 </head>
 <body class="bg-light">
@@ -16,8 +17,8 @@ include 'lib/koneksi.php';
 <!-- ================= NAVBAR ================= -->
 <nav class="navbar navbar-expand-lg bg-white shadow-sm fixed-top">
   <div class="container">
-    <a class="navbar-brand fw-bold text-danger d-flex align-items-center" href="#">
-      <img src="asset/img/logo.png" alt="Logo" width="50" class="">
+    <a class="navbar-brand fw-bold text-danger d-flex align-items-center" href="index.php">
+      <img src="asset/img/logo.png" alt="Logo" width="45" class="me-2">
       BioskopKu
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -26,21 +27,21 @@ include 'lib/koneksi.php';
 
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto align-items-center">
-        <li class="nav-item"><a class="nav-link active" href="index.php">Home</a></li>
+        <li class="nav-item"><a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active fw-bold' : '' ?>" href="index.php">Home</a></li>
         <li class="nav-item"><a class="nav-link" href="modul/film/film.php">Film</a></li>
         <li class="nav-item"><a class="nav-link" href="modul/tiket/tiket.php">Tiket Anda</a></li>
 
         <?php if (isset($_SESSION['user'])) { ?>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" data-bs-toggle="dropdown">
-              <img src="uploads/profile/<?php echo $_SESSION['user']['foto_profil']; ?>" 
+              <img src="uploads/profile/<?= $_SESSION['user']['foto_profil']; ?>" 
                    class="rounded-circle me-2" width="32" height="32" style="object-fit:cover;">
-              <?php echo $_SESSION['user']['username']; ?>
+              <?= $_SESSION['user']['username']; ?>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="modul/user/profil.php">Profil Saya</a></li>
+              <li><a class="dropdown-item" href="modul/user/profil.php"><i class="bi bi-person-circle me-2"></i>Profil Saya</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item text-danger" href="logout.php">Logout</a></li>
+              <li><a class="dropdown-item text-danger" href="logout.php"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
             </ul>
           </li>
         <?php } else { ?>
@@ -51,26 +52,27 @@ include 'lib/koneksi.php';
   </div>
 </nav>
 
-<!-- ================= BANNER ================= -->
+<!-- ================= BANNER DINAMIS ================= -->
 <section class="mt-5 pt-5">
   <div id="carouselBanner" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-inner">
-      <div class="carousel-item active">
-        <img src="asset/img/banner1.jpg" class="d-block w-100" alt="Banner 1">
-        <div class="carousel-caption d-none d-md-block bg-white bg-opacity-75 rounded-4 p-3">
-          <h2 class="fw-bold text-danger">Nikmati Pengalaman Nonton Terbaik 🎥</h2>
-          <p class="text-dark">Pesan tiket film favoritmu hanya di BioskopKu</p>
-          <a href="modul/film/film.php" class="btn btn-danger">Lihat Film</a>
+
+      <?php
+      $stmt = $conn->query("SELECT * FROM film WHERE status='tayang' ORDER BY tanggal_rilis DESC LIMIT 5");
+      $active = true;
+      while ($film = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      ?>
+        <div class="carousel-item <?= $active ? 'active' : ''; ?>">
+          <img src="<?= $film['gambar']; ?>" class="d-block w-100" alt="<?= $film['judul']; ?>">
+          
         </div>
-      </div>
-      <div class="carousel-item">
-        <img src="asset/img/banner2.jpg" class="d-block w-100" alt="Banner 2">
-        <div class="carousel-caption d-none d-md-block bg-white bg-opacity-75 rounded-4 p-3">
-          <h2 class="fw-bold text-danger">Film Terbaru Tiap Minggu!</h2>
-          <p class="text-dark">Jangan lewatkan tayangan perdana yang seru!</p>
-        </div>
-      </div>
+      <?php
+        $active = false;
+      }
+      ?>
+
     </div>
+
     <button class="carousel-control-prev" type="button" data-bs-target="#carouselBanner" data-bs-slide="prev">
       <span class="carousel-control-prev-icon"></span>
     </button>
@@ -91,11 +93,11 @@ include 'lib/koneksi.php';
       ?>
       <div class="col-6 col-md-3">
         <div class="card border-0 shadow-sm h-100">
-          <img src="uploads/img/<?php echo $film['gambar']; ?>" class="card-img-top" alt="<?php echo $film['judul']; ?>">
+          <img src="<?= $film['gambar']; ?>" class="card-img-top" alt="<?= $film['judul']; ?>">
           <div class="card-body text-center">
-            <h6 class="card-title fw-bold text-dark"><?php echo $film['judul']; ?></h6>
-            <p class="text-muted small mb-2"><?php echo $film['genre']; ?> • <?php echo $film['durasi']; ?> min</p>
-            <a href="modul/film/detail_film.php?id=<?php echo $film['film_id']; ?>" class="btn btn-outline-danger btn-sm">Lihat Detail</a>
+            <h6 class="card-title fw-bold text-dark"><?= $film['judul']; ?></h6>
+            <p class="text-muted small mb-2"><?= $film['genre']; ?> • <?= $film['durasi']; ?> min</p>
+            <a href="modul/film/detail_film.php?id=<?= $film['film_id']; ?>" class="btn btn-outline-danger btn-sm">Lihat Detail</a>
           </div>
         </div>
       </div>
@@ -115,9 +117,11 @@ include 'lib/koneksi.php';
       ?>
       <div class="col-6 col-md-3">
         <div class="card border-0 shadow-sm h-100">
-          <img src="uploads/img/<?php echo $film['gambar']; ?>" class="card-img-top" alt="<?php echo $film['judul']; ?>">
+          <img src="<?= $film['gambar']; ?>" class="card-img-top" alt="<?= $film['judul']; ?>">
           <div class="card-body text-center">
-            <h6 class="fw-bold"><?php echo $film['judul']; ?></h6>
+            <h6 class="card-title fw-bold text-dark"><?= $film['judul']; ?></h6>
+            <p class="text-muted small mb-2"><?= $film['genre']; ?> • <?= $film['durasi']; ?> min</p>
+            <a href="modul/film/detail_film.php?id=<?= $film['film_id']; ?>" class="btn btn-outline-danger btn-sm">Lihat Detail</a>
           </div>
         </div>
       </div>
@@ -137,9 +141,11 @@ include 'lib/koneksi.php';
       ?>
       <div class="col-6 col-md-3">
         <div class="card border-0 shadow-sm h-100">
-          <img src="uploads/img/<?php echo $film['gambar']; ?>" class="card-img-top" alt="<?php echo $film['judul']; ?>">
+          <img src="<?= $film['gambar']; ?>" class="card-img-top" alt="<?= $film['judul']; ?>">
           <div class="card-body text-center">
-            <h6 class="fw-bold"><?php echo $film['judul']; ?></h6>
+            <h6 class="card-title fw-bold text-dark"><?= $film['judul']; ?></h6>
+            <p class="text-muted small mb-2"><?= $film['genre']; ?> • <?= $film['durasi']; ?> min</p>
+            <a href="modul/film/detail_film.php?id=<?= $film['film_id']; ?>" class="btn btn-outline-danger btn-sm">Lihat Detail</a>
           </div>
         </div>
       </div>
@@ -159,9 +165,10 @@ include 'lib/koneksi.php';
       ?>
       <div class="col-6 col-md-3">
         <div class="card border-0 shadow-sm h-100">
-          <img src="uploads/img/<?php echo $film['gambar']; ?>" class="card-img-top" alt="<?php echo $film['judul']; ?>">
+          <img src="<?= $film['gambar']; ?>" class="card-img-top" alt="<?= $film['judul']; ?>">
           <div class="card-body text-center">
-            <h6 class="fw-bold"><?php echo $film['judul']; ?></h6>
+            <h6 class="card-title fw-bold text-dark"><?= $film['judul']; ?></h6>
+            <p class="text-muted small mb-2"><?= $film['genre']; ?> • <?= $film['durasi']; ?> min</p>
           </div>
         </div>
       </div>

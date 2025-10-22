@@ -120,6 +120,7 @@ if ($action == 'update') {
     <tr>
       <th>ID</th>
       <th>Gambar</th>
+      <th>Banner</th>
       <th>Judul</th>
       <th>Genre</th>
       <th>Durasi</th>
@@ -146,7 +147,7 @@ if ($action == 'update') {
     }
 
     if ($stmt->rowCount() == 0): ?>
-      <tr><td colspan="9" class="text-center text-muted">Tidak ada data ditemukan</td></tr>
+      <tr><td colspan="10" class="text-center text-muted">Tidak ada data ditemukan</td></tr>
     <?php else:
       foreach ($stmt as $row): ?>
       <tr>
@@ -154,6 +155,13 @@ if ($action == 'update') {
         <td>
           <?php if (!empty($row['gambar'])): ?>
             <img src="../<?= $row['gambar'] ?>" width="60" height="80" style="object-fit: cover;">
+          <?php else: ?>
+            <span class="text-muted">-</span>
+          <?php endif; ?>
+        </td>
+        <td>
+          <?php if (!empty($row['banner'])): ?>
+            <img src="../<?= $row['banner'] ?>" width="100" height="60" style="object-fit: cover;">
           <?php else: ?>
             <span class="text-muted">-</span>
           <?php endif; ?>
